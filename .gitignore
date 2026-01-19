@@ -1,6 +1,13 @@
 /vendor/
 composer.lock
 .phpunit.result.cache
+.php_cs.cache
 .DS_Store
 Thumbs.db
 *.log
+
+# File interni - non pubblicare
+PUBLISHING.md
+READY_TO_PUBLISH.md
+README_PACKAGIST.md
+QUICKSTART.md
