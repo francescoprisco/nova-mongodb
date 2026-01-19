@@ -1,7 +1,6 @@
 {
     "name": "francescoprisco/nova-mongodb",
     "description": "Complete Laravel Nova adapter for MongoDB - enables full Nova functionality on MongoDB databases without SQL dependencies",
-    "version": "1.0.0",
     "type": "library",
     "license": "MIT",
     "keywords": ["laravel", "nova", "mongodb", "adapter", "database", "nosql"],
