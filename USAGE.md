@@ -338,7 +338,7 @@ Contributions are welcome! Per contribuire:
 
 Per issue, domande o richieste di feature:
 - GitHub Issues: https://github.com/francescoprisco/nova-mongodb/issues
-- Email: francesco@codeloops.it
+- Email: francesco.prisco@generazioneai.it
 
 ## License
 

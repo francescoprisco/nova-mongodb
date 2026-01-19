@@ -253,4 +253,4 @@ MIT License - Francesco Prisco
 
 ## 🤝 Supporto
 
-Per issue e supporto: francesco@codeloops.it
+Per issue e supporto: francesco.prisco@generazioneai.it
