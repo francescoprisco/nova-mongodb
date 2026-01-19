@@ -1,28 +1,28 @@
 # Laravel Nova MongoDB Adapter
 
-Pacchetto completo per integrare Laravel Nova con MongoDB, permettendo l'utilizzo di tutte le funzionalità Nova su database MongoDB senza alcuna dipendenza da SQL.
+Complete package to integrate Laravel Nova with MongoDB, enabling all Nova features on MongoDB databases without any SQL dependencies.
 
-## ✨ Caratteristiche
+## ✨ Features
 
-- ✅ **Risorse Nova**: CRUD completo su collection MongoDB
-- ✅ **Ricerca Full-Text**: Ricerca tramite regex MongoDB case-insensitive
-- ✅ **Action Events**: Sistema completo di logging delle azioni tramite Observer pattern
-- ✅ **Autenticazione**: User model completamente su MongoDB
-- ✅ **Notifiche**: Sistema notifiche completo con mark read/unread su MongoDB
-- ✅ **Transaction Handling**: Gestione automatica delle transazioni nested
-- ✅ **Zero SQL**: Nessuna dipendenza da database SQL
+- ✅ **Nova Resources**: Complete CRUD on MongoDB collections
+- ✅ **Full-Text Search**: Case-insensitive regex search on MongoDB
+- ✅ **Action Events**: Complete action logging system via Observer pattern
+- ✅ **Authentication**: User model fully on MongoDB
+- ✅ **Notifications**: Complete notification system with mark read/unread on MongoDB
+- ✅ **Transaction Handling**: Automatic nested transaction management
+- ✅ **Zero SQL**: No SQL database dependencies
 
-## 📦 Installazione
+## 📦 Installation
 
 ```bash
 composer require francescoprisco/nova-mongodb
 ```
 
-Il service provider viene registrato automaticamente via Laravel package auto-discovery.
+The service provider is automatically registered via Laravel package auto-discovery.
 
-### Configurazione MongoDB
+### MongoDB Configuration
 
-Assicurati di avere la connessione MongoDB configurata nel tuo `config/database.php`:
+Make sure you have MongoDB connection configured in your `config/database.php`:
 
 ```php
 'connections' => [
@@ -39,9 +39,9 @@ Assicurati di avere la connessione MongoDB configurata nel tuo `config/database.
     ],
 ],
 
-## ⚙️ Configurazione
+## ⚙️ Configuration
 
-### 1. Model User
+### 1. User Model
 
 ```php
 use MongoDB\Laravel\Auth\User as Authenticatable;
@@ -60,7 +60,7 @@ class User extends Authenticatable
 
 ### 2. Nova Resources
 
-Le risorse devono estendere `MongoDBResource`:
+Resources must extend `MongoDBResource`:
 
 ```php
 use FrancescoPrisco\NovaMongoDB\MongoDBResource;
@@ -92,7 +92,7 @@ class Bookings extends MongoDBResource
 }
 ```
 
-### 3. Models MongoDB
+### 3. MongoDB Models
 
 ```php
 use MongoDB\Laravel\Eloquent\Model;
@@ -115,57 +115,57 @@ class Bookings extends Model
 }
 ```
 
-## 🏗️ Architettura
+## 🏗️ Architecture
 
-### Componenti Principali
+### Main Components
 
 #### `MongoDBResource`
-Classe base per risorse Nova con supporto MongoDB completo:
-- Ricerca tramite regex MongoDB (`$regex`) case-insensitive
-- Type hints corretti per builder MongoDB
-- Compatibilità con tutte le operazioni Nova CRUD
+Base class for Nova resources with complete MongoDB support:
+- Case-insensitive regex search via MongoDB (`$regex`)
+- Correct type hints for MongoDB builder
+- Compatibility with all Nova CRUD operations
 
 #### `MongoDBConnection`
-Estende la connessione MongoDB standard per gestire transazioni nested:
-- Cattura automaticamente errori di transazioni già in corso
-- Esegue callback direttamente quando necessario
-- Previene errori "Transaction already in progress"
+Extends standard MongoDB connection to handle nested transactions:
+- Automatically catches errors from transactions already in progress
+- Executes callbacks directly when necessary
+- Prevents "Transaction already in progress" errors
 
 #### `ModelObserver`
-Observer automatico per logging delle azioni:
-- Registrato automaticamente su tutti i modelli MongoDB
-- Log di created, updated, deleted
-- Salvataggio su `action_events` collection con tracking completo delle modifiche
+Automatic observer for action logging:
+- Automatically registered on all MongoDB models
+- Logs created, updated, deleted events
+- Saves to `action_events` collection with complete change tracking
 
-#### Models MongoDB
+#### MongoDB Models
 
-**ActionEvent**: Salva eventi azioni in `action_events` collection con dettagli completi (batch_id, user_id, changes, original, status)
-**NovaNotification**: Model notifiche in `notifications` collection con supporto read/unread
+**ActionEvent**: Saves action events in `action_events` collection with complete details (batch_id, user_id, changes, original, status)
+**NovaNotification**: Notification model in `notifications` collection with read/unread support
 
 #### Traits
 
-**MongoNotifiable**: Gestione notifiche complete con relazioni `notifications()` e `unreadNotifications()`
-**HandlesMorphRelations**: Helper per relazioni polimorfiche MongoDB
+**MongoNotifiable**: Complete notification management with `notifications()` and `unreadNotifications()` relations
+**HandlesMorphRelations**: Helper for MongoDB polymorphic relations
 
-### Routes Personalizzate
+### Custom Routes
 
-Il package registra automaticamente routes custom per le notifiche Nova:
-- `GET /nova-api/nova-notifications` - Lista notifiche
-- `POST /nova-api/nova-notifications/{id}/read` - Segna come letta
-- `POST /nova-api/nova-notifications/{id}/unread` - Segna come non letta
-- `POST /nova-api/nova-notifications/read-all` - Segna tutte come lette
-- `DELETE /nova-api/nova-notifications/{id}` - Elimina notifica
-- `DELETE /nova-api/nova-notifications` - Elimina tutte
+The package automatically registers custom routes for Nova notifications:
+- `GET /nova-api/nova-notifications` - List notifications
+- `POST /nova-api/nova-notifications/{id}/read` - Mark as read
+- `POST /nova-api/nova-notifications/{id}/unread` - Mark as unread
+- `POST /nova-api/nova-notifications/read-all` - Mark all as read
+- `DELETE /nova-api/nova-notifications/{id}` - Delete notification
+- `DELETE /nova-api/nova-notifications` - Delete all
 
-## 🚀 Utilizzo
+## 🚀 Usage
 
-### Creare una nuova risorsa
+### Create a new resource
 
 ```bash
 php artisan nova:resource Product
 ```
 
-Modifica la risorsa generata:
+Modify the generated resource:
 
 ```php
 use FrancescoPrisco\NovaMongoDB\MongoDBResource;
@@ -175,11 +175,11 @@ class Product extends MongoDBResource
     public static $model = \App\Models\Product::class;
     public static $search = ['name', 'sku', 'description'];
     
-    // ... campi e configurazione
+    // ... fields and configuration
 }
 ```
 
-### Registrare la risorsa
+### Register the resource
 
 In `app/Providers/NovaServiceProvider.php`:
 
@@ -190,67 +190,67 @@ protected function resources()
 {
     Nova::resources([
         Product::class,
-        // altre risorse...
+        // other resources...
     ]);
 }
 ```
 
-## ⚠️ Limitazioni Note
+## ⚠️ Known Limitations
 
 ### 1. Scout Search
-La ricerca avanzata di Laravel Scout richiede un driver MongoDB custom. Attualmente la ricerca usa regex MongoDB nativi.
+Laravel Scout advanced search requires a custom MongoDB driver. Currently search uses native MongoDB regex.
 
-### 2. Metriche Avanzate
-Cards/Metrics che usano aggregazioni SQL complesse potrebbero richiedere riscrittura usando MongoDB aggregation pipeline.
+### 2. Advanced Metrics
+Cards/Metrics using complex SQL aggregations may require rewriting using MongoDB aggregation pipeline.
 
 ### 3. Lenses
-Le Lenses di Nova che usano query SQL complesse potrebbero non funzionare direttamente e richiedere adattamento.
+Nova Lenses using complex SQL queries may not work directly and require adaptation.
 
-## 🔧 Risoluzione Problemi
+## 🔧 Troubleshooting
 
-### Ricerca non funziona
+### Search not working
 
-Verifica che:
-1. La risorsa estenda `MongoDBResource`
-2. I campi `$search` siano definiti
-3. Il model usi `connection = 'mongodb'`
+Verify that:
+1. The resource extends `MongoDBResource`
+2. The `$search` fields are defined
+3. The model uses `connection = 'mongodb'`
 
-### User non si autentica
+### User cannot authenticate
 
-Verifica:
-1. User model estenda `MongoDB\Laravel\Auth\User`
-2. Usi il trait `MongoNotifiable`
-3. `config/auth.php` punti al model corretto
+Verify:
+1. User model extends `MongoDB\Laravel\Auth\User`
+2. Uses the `MongoNotifiable` trait
+3. `config/auth.php` points to the correct model
 
-## 📊 Prestazioni
+## 📊 Performance
 
-Il pacchetto ottimizza automaticamente:
-- Query multiple tramite eager loading
-- Indicizzazione automatica campi ricerca
-- Cache dei risultati Nova compatibile
+The package automatically optimizes:
+- Multiple queries via eager loading
+- Automatic indexing of search fields
+- Nova-compatible result caching
 
-## 🛠️ Sviluppo Futuro
+## 🛠️ Future Development
 
 Roadmap:
-- [ ] Resource viewer per visualizzare ActionEvents nella UI Nova
-- [ ] Adapter metrics/cards avanzate con aggregation pipeline
-- [ ] Scout driver per ricerca full-text MongoDB
-- [ ] Support per Lenses personalizzate
-- [ ] Test suite completa
-- [ ] Dashboard widgets MongoDB-nativi con real-time updates
+- [ ] Resource viewer to display ActionEvents in Nova UI
+- [ ] Advanced metrics/cards adapter with aggregation pipeline
+- [ ] Scout driver for MongoDB full-text search
+- [ ] Support for custom Lenses
+- [ ] Complete test suite
+- [ ] MongoDB-native dashboard widgets with real-time updates
 
-## 📋 Requisiti
+## 📋 Requirements
 
 - PHP 8.2+
-- Laravel 11.0+ o 12.0+
+- Laravel 11.0+ or 12.0+
 - Laravel Nova 5.0+
 - MongoDB 5.0+
 - mongodb/laravel-mongodb ^5.5
 
-## 📄 Licenza
+## 📄 License
 
 MIT License - Francesco Prisco
 
-## 🤝 Supporto
+## 🤝 Support
 
-Per issue e supporto: francesco.prisco@generazioneai.it
+For issues and support: francesco.prisco@generazioneai.it

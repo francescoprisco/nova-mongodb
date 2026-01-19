@@ -1,6 +1,6 @@
-# Guida all'utilizzo di Laravel Nova MongoDB
+# Laravel Nova MongoDB Usage Guide
 
-## Struttura del Pacchetto
+## Package Structure
 
 ```
 packages/nova-mongodb/
@@ -22,7 +22,7 @@ packages/nova-mongodb/
         └── MongoNotifiable.php
 ```
 
-## Installazione
+## Installation
 
 ### Via Composer
 
@@ -30,17 +30,17 @@ packages/nova-mongodb/
 composer require francescoprisco/nova-mongodb
 ```
 
-Il service provider viene registrato automaticamente tramite Laravel package discovery.
+The service provider is automatically registered via Laravel package discovery.
 
-### Pubblica la configurazione (opzionale)
+### Publish Configuration (optional)
 
 ```bash
 php artisan vendor:publish --tag=nova-mongodb-config
 ```
 
-### Configura MongoDB
+### Configure MongoDB
 
-Assicurati di avere MongoDB configurato in `config/database.php`:
+Make sure MongoDB is configured in `config/database.php`:
 
 ```php
 'mongodb' => [
@@ -64,11 +64,11 @@ DB_USERNAME=your_username
 DB_PASSWORD=your_password
 ```
 
-## Utilizzo Base
+## Basic Usage
 
-### Creare una Resource MongoDB
+### Create a MongoDB Resource
 
-Invece di estendere `Laravel\Nova\Resource`, estendi `FrancescoPrisco\NovaMongoDB\MongoDBResource`:
+Instead of extending `Laravel\Nova\Resource`, extend `FrancescoPrisco\NovaMongoDB\MongoDBResource`:
 
 ```php
 <?php
@@ -101,9 +101,9 @@ class YourResource extends MongoDBResource
 }
 ```
 
-### Configurare il Model MongoDB
+### Configure MongoDB Model
 
-Il tuo model deve estendere `MongoDB\Laravel\Eloquent\Model`:
+Your model must extend `MongoDB\Laravel\Eloquent\Model`:
 
 ```php
 <?php
@@ -130,11 +130,11 @@ class YourModel extends Model
 }
 ```
 
-## Funzionalità
+## Features
 
-### 1. Ricerca (Search)
+### 1. Search
 
-Il pacchetto converte automaticamente le ricerche in regex MongoDB case-insensitive:
+The package automatically converts searches to case-insensitive MongoDB regex:
 
 ```php
 public static $search = [
@@ -144,48 +144,48 @@ public static $search = [
 ];
 ```
 
-La ricerca supporta match parziali e è case-insensitive.
+Search supports partial matching and is case-insensitive.
 
-### 2. Ordinamento (Sorting)
+### 2. Sorting
 
-Funziona normalmente con MongoDB:
+Works normally with MongoDB:
 
 ```php
 Text::make('Name')->sortable()
 ```
 
-### 3. Filtri
+### 3. Filters
 
-I filtri standard di Nova sono compatibili.
+Standard Nova filters are compatible.
 
-### 4. Relazioni Polimorfiche
+### 4. Polymorphic Relations
 
-Il pacchetto gestisce automaticamente le relazioni polimorfiche MongoDB.
+The package automatically handles MongoDB polymorphic relations.
 
 ### 5. Action Events
 
-Il sistema registra automaticamente tutti gli eventi tramite un Observer:
+The system automatically registers all events via an Observer:
 
-- **Create**: Logging automatico alla creazione
-- **Update**: Traccia tutte le modifiche (original vs changes)
-- **Delete**: Log delle eliminazioni
+- **Create**: Automatic logging on creation
+- **Update**: Tracks all changes (original vs changes)
+- **Delete**: Deletion logs
 
-Gli eventi vengono salvati nella collection `action_events` con:
-- `batch_id`: UUID per raggruppare operazioni
-- `user_id`: Utente che ha eseguito l'azione
-- `name`: Tipo di azione (Create, Update, Delete)
-- `model_type` e `model_id`: Riferimenti al model
-- `original`: Valori prima della modifica
-- `changes`: Valori dopo la modifica
-- `status`: Stato dell'operazione
+Events are saved in the `action_events` collection with:
+- `batch_id`: UUID to group operations
+- `user_id`: User who performed the action
+- `name`: Action type (Create, Update, Delete)
+- `model_type` and `model_id`: Model references
+- `original`: Values before modification
+- `changes`: Values after modification
+- `status`: Operation status
 - `created_at`: Timestamp
 
-### 6. Notifiche
+### 6. Notifications
 
-Sistema completo di notifiche Nova:
+Complete Nova notification system:
 
 ```php
-// Nel tuo User model
+// In your User model
 use FrancescoPrisco\NovaMongoDB\Traits\MongoNotifiable;
 
 class User extends Authenticatable
@@ -193,20 +193,20 @@ class User extends Authenticatable
     use MongoNotifiable;
 }
 
-// Invia notifica
+// Send notification
 $user->notify(new YourNotification($data));
 
-// Le notifiche appariranno automaticamente in Nova con:
-// - Badge con conteggio non lette
+// Notifications will automatically appear in Nova with:
+// - Badge with unread count
 // - Mark as read/unread
-// - Elimina singola/tutte
+// - Delete single/all
 ```
 
 ### 7. Transaction Handling
 
-Il pacchetto gestisce automaticamente le transazioni nested MongoDB prevenendo errori "Transaction already in progress".
+The package automatically handles nested MongoDB transactions preventing "Transaction already in progress" errors.
 
-## Esempio Completo: Bookings Resource
+## Complete Example: Bookings Resource
 
 ```php
 <?php
@@ -258,24 +258,24 @@ class Bookings extends MongoDBResource
 }
 ```
 
-## Limitazioni Attuali
+## Current Limitations
 
-1. **Lenses**: Le Lenses che usano query SQL complesse potrebbero richiedere adattamento per MongoDB.
+1. **Lenses**: Lenses using complex SQL queries may require adaptation for MongoDB.
 
-2. **Metrics Complesse**: Metrics con aggregazioni SQL avanzate vanno riscritte usando MongoDB aggregation pipeline.
+2. **Complex Metrics**: Metrics with advanced SQL aggregations need to be rewritten using MongoDB aggregation pipeline.
 
-3. **Scout Search**: Laravel Scout richiede un driver MongoDB custom per ricerca full-text avanzata.
+3. **Scout Search**: Laravel Scout requires a custom MongoDB driver for advanced full-text search.
 
 ## Testing
 
-Per testare le risorse:
+To test resources:
 
 ```bash
 php artisan tinker
 ```
 
 ```php
-// Crea un booking di test
+// Create a test booking
 $booking = new \App\Models\Bookings();
 $booking->customer_name = 'Test Customer';
 $booking->booking_date = now();
@@ -283,28 +283,28 @@ $booking->status = 'pending';
 $booking->notes = 'Test booking';
 $booking->save();
 
-// Verifica che sia visibile in Nova
-\App\Models\Bookings::count(); // Dovrebbe essere > 0
+// Verify it's visible in Nova
+\App\Models\Bookings::count(); // Should be > 0
 
-// Verifica che l'ActionEvent sia stato creato
+// Verify ActionEvent was created
 FrancescoPrisco\NovaMongoDB\Models\ActionEvent::where('model_type', 'App\\Models\\Bookings')
     ->where('name', 'Create')
-    ->count(); // Dovrebbe essere > 0
+    ->count(); // Should be > 0
 ```
 
 ## Troubleshooting
 
-### Collection non trovata
+### Collection not found
 
-Verifica che il nome della collection nel model corrisponda a quella nel database:
+Verify that the collection name in the model matches the one in the database:
 
 ```php
-protected $collection = 'bookings'; // Nome esatto della collection
+protected $collection = 'bookings'; // Exact collection name
 ```
 
-### Notifiche non funzionano
+### Notifications not working
 
-Verifica che il model User usi il trait `MongoNotifiable`:
+Verify that the User model uses the `MongoNotifiable` trait:
 
 ```php
 use FrancescoPrisco\NovaMongoDB\Traits\MongoNotifiable;
@@ -315,33 +315,33 @@ class User extends Authenticatable
 }
 ```
 
-## Prossimi Sviluppi
+## Future Developments
 
-- [ ] Resource viewer per ActionEvents nella UI Nova
-- [ ] Metrics e dashboard widgets ottimizzati per MongoDB aggregation
-- [ ] Scout driver per ricerca full-text MongoDB
-- [ ] Support per Lenses personalizzate
-- [ ] Cache layer per query complesse
-- [ ] Testing suite completo con PHPUnit
+- [ ] Resource viewer for ActionEvents in Nova UI
+- [ ] Metrics and dashboard widgets optimized for MongoDB aggregation
+- [ ] Scout driver for MongoDB full-text search
+- [ ] Support for custom Lenses
+- [ ] Cache layer for complex queries
+- [ ] Complete test suite with PHPUnit
 
-## Contribuire
+## Contributing
 
-Contributions are welcome! Per contribuire:
+Contributions are welcome! To contribute:
 
-1. Fork del repository su GitHub
-2. Crea un branch per la tua feature (`git checkout -b feature/amazing-feature`)
-3. Commit delle modifiche (`git commit -m 'Add amazing feature'`)
-4. Push al branch (`git push origin feature/amazing-feature`)
-5. Apri una Pull Request
+1. Fork the repository on GitHub
+2. Create a branch for your feature (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Supporto
+## Support
 
-Per issue, domande o richieste di feature:
+For issues, questions or feature requests:
 - GitHub Issues: https://github.com/francescoprisco/nova-mongodb/issues
 - Email: francesco.prisco@generazioneai.it
 
 ## License
 
-MIT License - Libero per uso commerciale e personale.
+MIT License - Free for commercial and personal use.
 
 Copyright (c) 2026 Francesco Prisco
